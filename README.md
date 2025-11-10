@@ -20,7 +20,10 @@ Add this package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  redis_dart_client: ^1.0.0
+  redis_dart_client:
+    git:
+      url: https://github.com/petrovyuri/redis_dart_client.git
+      ref: 1.0.0
 ```
 
 Then run:
