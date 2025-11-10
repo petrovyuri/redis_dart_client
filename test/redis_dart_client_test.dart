@@ -135,10 +135,10 @@ void main() {
       final keys = await client.keys('pattern:*');
       expect(keys.length, equals(3));
       expect(keys,
-          containsAll(['pattern:test1', 'pattern:test2', 'pattern:test3']));
+          containsAll(['pattern:test1', 'pattern:test2', 'pattern:test3']),);
 
       await client.delete(
-          ['pattern:test1', 'pattern:test2', 'pattern:test3', 'other:key']);
+          ['pattern:test1', 'pattern:test2', 'pattern:test3', 'other:key'],);
     });
 
     test('should handle TTL for non-existent key', () async {

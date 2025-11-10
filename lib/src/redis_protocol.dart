@@ -109,7 +109,7 @@ class RedisProtocol {
               if (!_dataAvailableCompleter!.isCompleted) {
                 _dataAvailableCompleter!.completeError(
                   RedisException(
-                      'Response timeout (${responseTimeout!.inMilliseconds} ms)'),
+                      'Response timeout (${responseTimeout!.inMilliseconds} ms)',),
                 );
               }
             },
@@ -146,7 +146,7 @@ class RedisProtocol {
               if (!_dataAvailableCompleter!.isCompleted) {
                 _dataAvailableCompleter!.completeError(
                   RedisException(
-                      'Response timeout (${responseTimeout!.inMilliseconds} ms)'),
+                      'Response timeout (${responseTimeout!.inMilliseconds} ms)',),
                 );
               }
             },
@@ -193,7 +193,7 @@ class RedisProtocol {
               if (!_dataAvailableCompleter!.isCompleted) {
                 _dataAvailableCompleter!.completeError(
                   RedisException(
-                      'Response timeout (${responseTimeout!.inMilliseconds} ms)'),
+                      'Response timeout (${responseTimeout!.inMilliseconds} ms)',),
                 );
               }
             },
