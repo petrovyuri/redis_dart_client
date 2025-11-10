@@ -136,10 +136,10 @@ dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage
 
 ## Troubleshooting
 
-\n### Hanging on first command (e.g. SET)
+### Hanging on first command (e.g. SET)
 Ensure you are using the latest version of the client (RESP formatted with `\r\n`) and that Redis is reachable at the configured `host:port`.
 
-\n### Timeout errors
+### Timeout errors
 If `responseTimeout` is set, reading a response will throw a `RedisException` when the timeout is exceeded.
 
 ### Quick Redis start with Docker
