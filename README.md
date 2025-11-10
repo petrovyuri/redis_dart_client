@@ -98,7 +98,7 @@ void main() async {
 
 ## Examples
 
-See the [example](example/redis_dart_client_example.dart) directory for a complete example demonstrating all available operations.
+See the [example](https://github.com/petrovyuri/redis_dart_client/blob/main/example/lib/redis_dart_client_example.dart) directory for a complete example demonstrating all available operations.
 
 ## Error Handling
 
