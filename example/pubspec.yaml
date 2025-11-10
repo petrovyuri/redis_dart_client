@@ -1,0 +1,16 @@
+name: redis_dart_client_example
+description: A sample example.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.1.0
+
+# Add regular dependencies here.
+dependencies:
+  redis_dart_client:
+    path: ../
+     
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6
