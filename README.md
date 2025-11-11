@@ -11,6 +11,7 @@ A simple and lightweight Redis client for Dart that provides basic Redis operati
 - ✅ No external dependencies (uses Dart's built-in `dart:io`)
 - ✅ Optional response timeout
 - ✅ Simple pipeline batching
+- ✅ Full UTF-8 support (including Cyrillic, Chinese, emoji, and other Unicode characters)
 
 ## Getting Started
 

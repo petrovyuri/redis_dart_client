@@ -44,16 +44,26 @@ class RedisProtocol {
   /// Sends a command to Redis server.
   /// Builds and sends a RESP array command.
   /// Format: `*<N>\r\n$<len(arg1)>\r\narg1\r\n...$<len(argN)>\r\nargN\r\n`
+  /// All arguments are explicitly encoded to UTF-8 bytes to ensure proper handling of Unicode characters.
   Future<void> sendCommand(List<String> command) async {
-    final sb = StringBuffer()..write('*${command.length}\r\n');
+    final List<int> buffer = [];
+
+    // Encode array header: *<N>\r\n
+    final arrayHeader = utf8.encode('*${command.length}\r\n');
+    buffer.addAll(arrayHeader);
+
+    // Encode each argument
     for (final arg in command) {
-      final bytes = utf8.encode(arg);
-      sb
-        ..write('\$${bytes.length}\r\n')
-        ..write(arg)
-        ..write('\r\n');
+      final argBytes = utf8.encode(arg);
+      // Encode bulk string header: $<len>\r\n
+      final bulkHeader = utf8.encode('\$${argBytes.length}\r\n');
+      buffer
+        ..addAll(bulkHeader)
+        ..addAll(argBytes)
+        ..addAll([13, 10]); // \r\n
     }
-    _socket.add(utf8.encode(sb.toString()));
+
+    _socket.add(buffer);
     await _socket.flush();
   }
 
@@ -109,7 +119,8 @@ class RedisProtocol {
               if (!_dataAvailableCompleter!.isCompleted) {
                 _dataAvailableCompleter!.completeError(
                   RedisException(
-                      'Response timeout (${responseTimeout!.inMilliseconds} ms)',),
+                    'Response timeout (${responseTimeout!.inMilliseconds} ms)',
+                  ),
                 );
               }
             },
@@ -146,7 +157,8 @@ class RedisProtocol {
               if (!_dataAvailableCompleter!.isCompleted) {
                 _dataAvailableCompleter!.completeError(
                   RedisException(
-                      'Response timeout (${responseTimeout!.inMilliseconds} ms)',),
+                    'Response timeout (${responseTimeout!.inMilliseconds} ms)',
+                  ),
                 );
               }
             },
@@ -193,7 +205,8 @@ class RedisProtocol {
               if (!_dataAvailableCompleter!.isCompleted) {
                 _dataAvailableCompleter!.completeError(
                   RedisException(
-                      'Response timeout (${responseTimeout!.inMilliseconds} ms)',),
+                    'Response timeout (${responseTimeout!.inMilliseconds} ms)',
+                  ),
                 );
               }
             },

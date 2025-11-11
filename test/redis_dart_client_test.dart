@@ -134,11 +134,14 @@ void main() {
 
       final keys = await client.keys('pattern:*');
       expect(keys.length, equals(3));
-      expect(keys,
-          containsAll(['pattern:test1', 'pattern:test2', 'pattern:test3']),);
+      expect(
+        keys,
+        containsAll(['pattern:test1', 'pattern:test2', 'pattern:test3']),
+      );
 
       await client.delete(
-          ['pattern:test1', 'pattern:test2', 'pattern:test3', 'other:key'],);
+        ['pattern:test1', 'pattern:test2', 'pattern:test3', 'other:key'],
+      );
     });
 
     test('should handle TTL for non-existent key', () async {
@@ -153,6 +156,25 @@ void main() {
       final ttl = await client.ttl('no_expire_key');
       expect(ttl, equals(-1)); // -1 means no expiration set
       await client.delete(['no_expire_key']);
+    });
+
+    test('should handle UTF-8 and Cyrillic characters correctly', () async {
+      await client.connect();
+      // Test with Cyrillic text
+      const cyrillicValue = 'Привет, мир! Тест кириллицы: 中文测试';
+      const cyrillicKey = 'тест:ключ';
+
+      await client.set(cyrillicKey, cyrillicValue);
+      final retrievedValue = await client.get(cyrillicKey);
+      expect(retrievedValue, equals(cyrillicValue));
+
+      // Test with mixed content
+      const mixedValue = 'Hello 世界! Привет! 🌍';
+      await client.set('mixed:key', mixedValue);
+      final retrievedMixed = await client.get('mixed:key');
+      expect(retrievedMixed, equals(mixedValue));
+
+      await client.delete([cyrillicKey, 'mixed:key']);
     });
   });
 }
