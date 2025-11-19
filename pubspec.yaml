@@ -10,6 +10,12 @@ documentation: https://github.com/petrovyuri/redis_dart_client/blob/main/README.
 environment:
   sdk: '>=3.1.0 <4.0.0'
 
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
 
 dev_dependencies:
   lints: ^6.0.0
