@@ -1,60 +1,30 @@
+# This file configures the static analysis results for your project (errors,
+# warnings, and lints).
+#
+# This enables the 'recommended' set of lints from `package:lints`.
+# This set helps identify many issues that may lead to problems when running
+# or consuming Dart code, and enforces writing Dart using a single, idiomatic
+# style and format.
+#
+# If you want a smaller set of lints you can change this to specify
+# 'package:lints/core.yaml'. These are just the most critical lints
+# (the recommended set includes the core lints).
+# The core lints are also what is used by pub.dev for scoring packages.
+
 include: package:lints/recommended.yaml
 
-errors:
-  avoid_dynamic_calls: error
-  avoid_returning_null_for_future: error
-  avoid_slow_async_io: warning
-  avoid_type_to_string: warning
-  cancel_subscriptions: error
-  close_sinks: error
-  comment_references: warning
-  always_declare_return_types: error
-  always_require_non_null_named_parameters: warning
-  avoid_bool_literals_in_conditional_expressions: warning
-  avoid_return_types_on_setters: warning
-  avoid_returning_null: error
-  avoid_setters_without_getters: error
-  avoid_void_async: error
-  constant_identifier_names: error
-  unnecessary_new: warning
+# Uncomment the following section to specify additional rules.
 
-linter:
-  rules:
-    always_put_required_named_parameters_first: true
-    avoid_catches_without_on_clauses: true
-    avoid_catching_errors: true
-    avoid_equals_and_hash_code_on_mutable_classes: true
-    avoid_escaping_inner_quotes: true
-    avoid_field_initializers_in_const_classes: true
-    avoid_implementing_value_types: true
-    avoid_multiple_declarations_per_line: false
-    avoid_positional_boolean_parameters: true
-    avoid_private_typedef_functions: true
-    avoid_redundant_argument_values: true
-    avoid_returning_this: true
-    cascade_invocations: true
-    deprecated_consistency: true
-    do_not_use_environment: false
-    leading_newlines_in_multiline_strings: true
-    no_runtimeType_toString: true
-    one_member_abstracts: false
-    only_throw_errors: true
-    parameter_assignments: true
-    prefer_asserts_with_message: true
-    prefer_constructors_over_static_methods: true
-    prefer_final_in_for_each: true
-    prefer_final_locals: true
-    public_member_api_docs: false
-    require_trailing_commas: true
-    sort_constructors_first: true
-    sort_pub_dependencies: false
-    sort_unnamed_constructors_first: false
-    use_is_even_rather_than_modulo: true
-    use_late_for_private_fields_and_variables: false
-    use_setters_to_change_properties: true
-    use_string_buffers: true
-    use_to_and_as_if_applicable: true
-    no_literal_bool_comparisons: true
-    always_use_package_imports: true
-    unawaited_futures: true
-    comment_references: true
+# linter:
+#   rules:
+#     - camel_case_types
+
+# analyzer:
+#   exclude:
+#     - path/to/excluded/files/**
+
+# For more information about the core and recommended set of lints, see
+# https://dart.dev/go/core-lints
+
+# For additional information about configuring this file, see
+# https://dart.dev/guides/language/analysis-options

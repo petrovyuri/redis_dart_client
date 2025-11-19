@@ -21,10 +21,7 @@ Add this package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  redis_dart_client:
-    git:
-      url: https://github.com/petrovyuri/redis_dart_client.git
-      ref: 1.0.0
+  redis_dart_client: ^1.0.0
 ```
 
 Then run:
@@ -115,7 +112,7 @@ try {
 
 ## Requirements
 
-- Dart SDK >= 3.9.2
+- Dart SDK >= 3.1.0
 - Redis server running and accessible
 - (Optional) Docker to quickly start a local Redis instance
 

@@ -3,6 +3,9 @@ description: A simple and lightweight Redis client for Dart.
 version: 1.0.0
 license: MIT
 repository: https://github.com/petrovyuri/redis_dart_client
+issue_tracker: https://github.com/petrovyuri/redis_dart_client/issues
+documentation: https://github.com/petrovyuri/redis_dart_client/blob/main/README.md
+
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
