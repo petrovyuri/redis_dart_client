@@ -105,33 +105,39 @@ class RedisProtocol {
     }
   }
 
+  /// Waits for data to be available with optional timeout
+  Future<void> _waitForData([String? context]) async {
+    _dataAvailableCompleter = Completer<void>();
+    final future = _dataAvailableCompleter!.future;
+    if (responseTimeout != null) {
+      try {
+        await future.timeout(
+          responseTimeout!,
+          onTimeout: () {
+            if (!_dataAvailableCompleter!.isCompleted) {
+              _dataAvailableCompleter!.completeError(
+                RedisException(
+                  'Response timeout (${responseTimeout!.inMilliseconds} ms)',
+                ),
+              );
+            }
+          },
+        );
+      } catch (e) {
+        if (e is RedisException) rethrow;
+        final contextMsg = context != null ? ' ($context)' : '';
+        throw RedisException('Timeout waiting for data$contextMsg: $e');
+      }
+    } else {
+      await future;
+    }
+  }
+
   /// Reads a line from the socket (until CRLF)
   Future<String> _readLine() async {
     // Wait for data if buffer is empty
     while (_readBuffer.isEmpty) {
-      _dataAvailableCompleter = Completer<void>();
-      final future = _dataAvailableCompleter!.future;
-      if (responseTimeout != null) {
-        try {
-          await future.timeout(
-            responseTimeout!,
-            onTimeout: () {
-              if (!_dataAvailableCompleter!.isCompleted) {
-                _dataAvailableCompleter!.completeError(
-                  RedisException(
-                    'Response timeout (${responseTimeout!.inMilliseconds} ms)',
-                  ),
-                );
-              }
-            },
-          );
-        } catch (e) {
-          if (e is RedisException) rethrow;
-          throw RedisException('Timeout waiting for data: $e');
-        }
-      } else {
-        await future;
-      }
+      await _waitForData('waiting for data');
     }
 
     int crIndex = -1;
@@ -147,29 +153,7 @@ class RedisProtocol {
 
     // If CR not found, wait for more data
     while (crIndex == -1) {
-      _dataAvailableCompleter = Completer<void>();
-      final future = _dataAvailableCompleter!.future;
-      if (responseTimeout != null) {
-        try {
-          await future.timeout(
-            responseTimeout!,
-            onTimeout: () {
-              if (!_dataAvailableCompleter!.isCompleted) {
-                _dataAvailableCompleter!.completeError(
-                  RedisException(
-                    'Response timeout (${responseTimeout!.inMilliseconds} ms)',
-                  ),
-                );
-              }
-            },
-          );
-        } catch (e) {
-          if (e is RedisException) rethrow;
-          throw RedisException('Timeout waiting for line: $e');
-        }
-      } else {
-        await future;
-      }
+      await _waitForData('waiting for line');
       // Check again after data arrived
       for (int i = 0; i < _readBuffer.length; i++) {
         if (_readBuffer[i] == 13) {
@@ -195,29 +179,7 @@ class RedisProtocol {
   Future<List<int>> _readBytes(int length) async {
     // Wait for enough data
     while (_readBuffer.length < length) {
-      _dataAvailableCompleter = Completer<void>();
-      final future = _dataAvailableCompleter!.future;
-      if (responseTimeout != null) {
-        try {
-          await future.timeout(
-            responseTimeout!,
-            onTimeout: () {
-              if (!_dataAvailableCompleter!.isCompleted) {
-                _dataAvailableCompleter!.completeError(
-                  RedisException(
-                    'Response timeout (${responseTimeout!.inMilliseconds} ms)',
-                  ),
-                );
-              }
-            },
-          );
-        } catch (e) {
-          if (e is RedisException) rethrow;
-          throw RedisException('Timeout reading bulk data: $e');
-        }
-      } else {
-        await future;
-      }
+      await _waitForData('reading bulk data');
     }
 
     // Extract bytes

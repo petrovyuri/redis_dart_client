@@ -9,7 +9,7 @@ class RedisClient {
   /// Creates a new Redis client instance
   ///
   /// [host] - Redis server hostname (default: 'localhost')
-  /// [port] - Redis server port (default: 6379)
+  /// [port] - Redis server port (default: 6379, must be between 1 and 65535)
   /// [password] - Optional password for authentication
   /// [responseTimeout] - Optional timeout for Redis operations
   RedisClient({
@@ -20,7 +20,15 @@ class RedisClient {
   })  : _host = host,
         _port = port,
         _password = password,
-        _responseTimeout = responseTimeout;
+        _responseTimeout = responseTimeout {
+    if (port < 1 || port > 65535) {
+      throw ArgumentError.value(
+        port,
+        'port',
+        'Port must be between 1 and 65535',
+      );
+    }
+  }
 
   Socket? _socket;
   // Removed separate subscription; RedisProtocol internally listens to the socket.
@@ -50,7 +58,16 @@ class RedisClient {
         await _protocol!.readResponse();
       }
     } catch (e) {
+      // Clean up resources on error
       _isConnected = false;
+      _protocol?.clearBuffer();
+      _protocol = null;
+      try {
+        await _socket?.close();
+      } catch (_) {
+        // Ignore errors during cleanup
+      }
+      _socket = null;
       throw RedisException('Failed to connect to Redis: $e');
     }
   }
@@ -58,7 +75,11 @@ class RedisClient {
   /// Disconnects from the Redis server
   Future<void> disconnect() async {
     if (_socket != null) {
-      await _socket!.close();
+      try {
+        await _socket!.close();
+      } catch (_) {
+        // Ignore errors during disconnect
+      }
       _socket = null;
       _isConnected = false;
     }
@@ -103,7 +124,14 @@ class RedisClient {
     _ensureConnected();
     await _protocol!.sendCommand(['DEL', ...keys]);
     final response = await _protocol!.readResponse();
-    return int.parse(response.toString());
+    if (response is int) {
+      return response;
+    }
+    try {
+      return int.parse(response.toString());
+    } catch (e) {
+      throw RedisException('Invalid response from DELETE command: $e');
+    }
   }
 
   /// Checks if a key exists in Redis
@@ -114,7 +142,14 @@ class RedisClient {
     _ensureConnected();
     await _protocol!.sendCommand(['EXISTS', key]);
     final response = await _protocol!.readResponse();
-    return int.parse(response.toString()) == 1;
+    if (response is int) {
+      return response == 1;
+    }
+    try {
+      return int.parse(response.toString()) == 1;
+    } catch (e) {
+      throw RedisException('Invalid response from EXISTS command: $e');
+    }
   }
 
   /// Sets a key with expiration time
@@ -138,7 +173,14 @@ class RedisClient {
     _ensureConnected();
     await _protocol!.sendCommand(['TTL', key]);
     final response = await _protocol!.readResponse();
-    return int.parse(response.toString());
+    if (response is int) {
+      return response;
+    }
+    try {
+      return int.parse(response.toString());
+    } catch (e) {
+      throw RedisException('Invalid response from TTL command: $e');
+    }
   }
 
   /// Increments the integer value of a key by 1
@@ -149,7 +191,14 @@ class RedisClient {
     _ensureConnected();
     await _protocol!.sendCommand(['INCR', key]);
     final response = await _protocol!.readResponse();
-    return int.parse(response.toString());
+    if (response is int) {
+      return response;
+    }
+    try {
+      return int.parse(response.toString());
+    } catch (e) {
+      throw RedisException('Invalid response from INCR command: $e');
+    }
   }
 
   /// Decrements the integer value of a key by 1
@@ -160,7 +209,14 @@ class RedisClient {
     _ensureConnected();
     await _protocol!.sendCommand(['DECR', key]);
     final response = await _protocol!.readResponse();
-    return int.parse(response.toString());
+    if (response is int) {
+      return response;
+    }
+    try {
+      return int.parse(response.toString());
+    } catch (e) {
+      throw RedisException('Invalid response from DECR command: $e');
+    }
   }
 
   /// Gets all keys matching a pattern
