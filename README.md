@@ -21,7 +21,7 @@ Add this package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  redis_dart_client: ^1.0.0
+  redis_dart_client: <version>
 ```
 
 Then run:
@@ -97,6 +97,31 @@ void main() async {
 ## Examples
 
 See the [example](https://github.com/petrovyuri/redis_dart_client/blob/main/example/lib/redis_dart_client_example.dart) directory for a complete example demonstrating all available operations.
+
+### Running the Example
+
+To run the example, you need a Redis server running. The easiest way is to use Docker:
+
+1. **Install Docker** (if not already installed):
+   - Download from [docker.com](https://www.docker.com/get-started)
+
+2. **Start a Redis container**:
+   ```bash
+   docker run --rm -d -p 6379:6379 --name redis-test redis:alpine
+   ```
+
+3. **Run the example**:
+   ```bash
+   cd example
+   dart run lib/redis_dart_client_example.dart
+   ```
+
+4. **Stop the Redis container** (when done):
+   ```bash
+   docker stop redis-test
+   ```
+
+The example demonstrates all available operations including SET, GET, DELETE, EXISTS, SETEX, TTL, INCR, DECR, KEYS, and pipeline operations.
 
 ## Error Handling
 
