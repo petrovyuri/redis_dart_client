@@ -38,6 +38,9 @@ void main() {
         } catch (e) {
           // Timeout or other error is acceptable
           expect(e, isA<RedisException>());
+          // Verify timeout message is present (case insensitive check)
+          final errorMsg = e.toString().toLowerCase();
+          expect(errorMsg.contains('timeout'), isTrue);
         }
       } catch (e) {
         // Connection might fail, that's ok
@@ -48,6 +51,7 @@ void main() {
         }
       }
     });
+
 
     test('should handle array responses with null elements', () async {
       final client = RedisClient();
