@@ -1,5 +1,7 @@
 # Redis Dart Client
 
+[![Pub](https://img.shields.io/pub/v/redis_dart_client.svg)](https://pub.dev/packages/redis_dart_client) [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT) [![GitHub stars](https://img.shields.io/github/stars/petrovyuri/redis_dart_client?style=social)](https://github.com/petrovyuri/redis_dart_client)
+
 A simple and lightweight Redis client for Dart that provides basic Redis operations.
 
 ## Features
