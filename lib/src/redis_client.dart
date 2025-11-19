@@ -29,14 +29,19 @@ class RedisClient {
       );
     }
   }
-
+  // Socket for communication with Redis server
   Socket? _socket;
   // Removed separate subscription; RedisProtocol internally listens to the socket.
   RedisProtocol? _protocol;
+  // Hostname of the Redis server
   final String _host;
+  // Port of the Redis server
   final int _port;
+  // Password for authentication
   final String? _password;
+  // Flag to check if the client is connected
   bool _isConnected = false;
+  // Timeout for Redis operations
   final Duration? _responseTimeout;
 
   /// Connects to the Redis server

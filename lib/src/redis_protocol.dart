@@ -13,10 +13,13 @@ class RedisProtocol {
   RedisProtocol(this._socket, {this.responseTimeout}) {
     _setupStreamListener();
   }
-
+  // Socket for communication with Redis server
   final Socket _socket;
+  // Buffer for incoming data
   final List<int> _readBuffer = [];
+  // Completer for waiting for data
   Completer<void>? _dataAvailableCompleter;
+  // Timeout for reading responses
   final Duration? responseTimeout;
 
   /// Sets up stream listener to buffer incoming data
@@ -68,7 +71,7 @@ class RedisProtocol {
   }
 
   /// Reads a response from Redis server
-  Future<dynamic> readResponse() async {
+  Future<Object?> readResponse() async {
     final line = await _readLine();
     if (line.isEmpty) {
       throw RedisException('Empty response from Redis');
