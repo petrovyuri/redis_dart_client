@@ -98,6 +98,143 @@ void main() async {
 
 ## Examples
 
+### Pipeline Example
+
+Pipeline allows you to send multiple commands efficiently without waiting for each response:
+
+```dart
+import 'package:redis_dart_client/redis_dart_client.dart';
+
+void main() async {
+  final client = RedisClient();
+  await client.connect();
+
+  try {
+    // Execute multiple commands in a pipeline
+    final results = await client.pipeline([
+      ['SET', 'user:1', 'Alice'],
+      ['SET', 'user:2', 'Bob'],
+      ['GET', 'user:1'],
+      ['GET', 'user:2'],
+      ['INCR', 'visitor_count'],
+      ['INCR', 'visitor_count'],
+    ]);
+
+    print('Results: $results');
+    // Output: ['OK', 'OK', 'Alice', 'Bob', 1, 2]
+
+    // Clean up
+    await client.delete(['user:1', 'user:2', 'visitor_count']);
+  } finally {
+    await client.disconnect();
+  }
+}
+```
+
+### Flutter Example
+
+This package works great with Flutter apps on mobile and desktop:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:redis_dart_client/redis_dart_client.dart';
+
+class RedisCacheService {
+  late RedisClient _client;
+  bool _isConnected = false;
+
+  Future<void> initialize() async {
+    _client = RedisClient(
+      host: 'your-redis-server.com',
+      port: 6379,
+      password: 'your-password', // Optional
+      responseTimeout: const Duration(seconds: 5),
+    );
+
+    try {
+      await _client.connect();
+      _isConnected = true;
+    } on RedisException catch (e) {
+      debugPrint('Failed to connect to Redis: $e');
+      _isConnected = false;
+    }
+  }
+
+  Future<String?> getCachedData(String key) async {
+    if (!_isConnected) return null;
+    
+    try {
+      return await _client.get(key);
+    } on RedisException catch (e) {
+      debugPrint('Error getting cache: $e');
+      return null;
+    }
+  }
+
+  Future<void> setCachedData(String key, String value, {int? ttl}) async {
+    if (!_isConnected) return;
+    
+    try {
+      if (ttl != null) {
+        await _client.setex(key, value, ttl);
+      } else {
+        await _client.set(key, value);
+      }
+    } on RedisException catch (e) {
+      debugPrint('Error setting cache: $e');
+    }
+  }
+
+  Future<void> disconnect() async {
+    if (_isConnected) {
+      await _client.disconnect();
+      _isConnected = false;
+    }
+  }
+}
+
+// Usage in a Flutter widget
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final _cacheService = RedisCacheService();
+  String? _cachedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeCache();
+  }
+
+  Future<void> _initializeCache() async {
+    await _cacheService.initialize();
+    _cachedValue = await _cacheService.getCachedData('my_key');
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _cacheService.disconnect();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text('Redis Cache Example')),
+        body: Center(
+          child: Text(_cachedValue ?? 'No cached value'),
+        ),
+      ),
+    );
+  }
+}
+```
+
 See the [example](https://github.com/petrovyuri/redis_dart_client/blob/main/example/lib/redis_dart_client_example.dart) directory for a complete example demonstrating all available operations.
 
 ### Running the Example
@@ -127,13 +264,61 @@ The example demonstrates all available operations including SET, GET, DELETE, EX
 
 ## Error Handling
 
-All operations can throw a `RedisException` if something goes wrong:
+All operations can throw a `RedisException` if something goes wrong. Here are examples of proper error handling:
+
+### Basic Error Handling
 
 ```dart
 try {
   await client.set('key', 'value');
 } on RedisException catch (e) {
   print('Redis error: $e');
+}
+```
+
+### Comprehensive Error Handling
+
+```dart
+import 'package:redis_dart_client/redis_dart_client.dart';
+
+void main() async {
+  final client = RedisClient(
+    host: 'localhost',
+    port: 6379,
+    responseTimeout: const Duration(seconds: 5),
+  );
+
+  try {
+    await client.connect();
+    
+    // Perform operations
+    await client.set('user:1', 'Alice');
+    final value = await client.get('user:1');
+    print('Value: $value');
+    
+  } on RedisException catch (e) {
+    // Handle Redis-specific errors
+    print('Redis operation failed: ${e.message}');
+    
+    // Check connection status
+    if (!client.isConnected) {
+      print('Connection lost. Attempting to reconnect...');
+      try {
+        await client.connect();
+        print('Reconnected successfully');
+      } catch (reconnectError) {
+        print('Reconnection failed: $reconnectError');
+      }
+    }
+  } catch (e) {
+    // Handle other errors
+    print('Unexpected error: $e');
+  } finally {
+    // Always disconnect
+    if (client.isConnected) {
+      await client.disconnect();
+    }
+  }
 }
 ```
 
@@ -202,16 +387,6 @@ If `responseTimeout` is set, reading a response will throw a `RedisException` wh
 docker run --rm -d -p 6379:6379 --name redis-test redis:alpine
 ```
 
-### Pipeline example
-
-```dart
-final results = await client.pipeline([
-  ['SET', 'pipeline:key', '123'],
-  ['GET', 'pipeline:key'],
-  ['INCR', 'counter'],
-]);
-print(results); // ['OK', '123', 1]
-```
 
 ## License
 
