@@ -127,6 +127,10 @@ class RedisClient {
   /// Returns the number of keys deleted
   Future<int> delete(List<String> keys) async {
     _ensureConnected();
+    // Redis doesn't accept DEL without arguments, return 0 for empty list
+    if (keys.isEmpty) {
+      return 0;
+    }
     await _protocol!.sendCommand(['DEL', ...keys]);
     final response = await _protocol!.readResponse();
     if (response is int) {
