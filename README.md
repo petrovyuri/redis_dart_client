@@ -143,6 +143,21 @@ try {
 - Redis server running and accessible
 - (Optional) Docker to quickly start a local Redis instance
 
+## Supported Platforms
+
+This package uses `dart:io` for socket communication, which means it supports:
+
+- ✅ **Dart (Server)** - Command-line applications and server-side Dart
+- ✅ **Flutter** - Mobile and desktop applications
+  - ✅ Android
+  - ✅ iOS
+  - ✅ Linux
+  - ✅ macOS
+  - ✅ Windows
+- ❌ **Flutter Web** - Not supported (browsers don't support `dart:io`)
+
+**Note:** This package works perfectly with Flutter apps on mobile and desktop platforms. For Flutter web applications, consider using a Redis proxy or WebSocket-based solution.
+
 ## Test Coverage
 
 The project has comprehensive test coverage:
